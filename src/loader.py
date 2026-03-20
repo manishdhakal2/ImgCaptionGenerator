@@ -1,0 +1,100 @@
+import torch
+import numpy as np
+import cv2
+import os
+
+from sklearn.model_selection import train_test_split  
+
+from torch.utils.data import Dataset, DataLoader
+
+
+
+def load_dataset( img_path, caption_path):
+
+    
+
+    with open(caption_path, "r+") as caption_file:
+        captions = caption_file.read()
+
+    caption_list=captions.split("\n")[1:]
+
+    caption_dict = {  key:value.strip()  
+                    for element in caption_list
+                    if "," in element
+                    for key,value in [element.split(",",1)]
+                    
+                    }
+    
+
+    
+
+    
+    image_list = []
+
+    for key in caption_dict.keys():
+
+        image_file = os.path.join(img_path, key)
+
+        img = cv2.imread(image_file)
+
+
+
+        if img is None:
+            print(f"Couldn't Load {key}")
+        
+
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+        img = cv2.resize(img,(224,224))
+
+        
+
+            
+
+        image_list.append(img)
+
+    
+
+    img_tensor = torch.tensor(np.array(image_list), dtype = torch.float32)/255.0
+
+    captions = list(caption_dict.values())
+
+
+    train_img, test_img, train_caps, test_caps = train_test_split(img_tensor, captions, test_size = 0.33, random_state= 42)
+
+
+    train_dataset = ImageCaptionDataset(img_tensor= train_img, labels = train_caps)
+    test_dataset = ImageCaptionDataset(img_tensor= test_img, labels = test_caps)
+
+
+    train_loader = DataLoader(train_dataset, batch_size = 8, shuffle= True, num_workers= 0)
+    test_loader = DataLoader(test_dataset, batch_size = 8, shuffle= True, num_workers= 0)
+
+
+
+    return train_loader, test_loader
+
+
+    
+
+
+
+class ImageCaptionDataset(Dataset):
+    def __init__(self, img_tensor, labels):
+        self.img = img_tensor
+        self.caption = labels
+    
+    def __len__(self):
+
+        return self.img.shape[0]
+    
+    def __getitem__(self,index):
+
+        return self.img[index],self.caption[index]
+
+   
+
+
+
+            
+
