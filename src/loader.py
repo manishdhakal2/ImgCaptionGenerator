@@ -45,6 +45,8 @@ def load_dataset( img_path, caption_path):
 
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
+        img = img.permute(2,0,1)
+
         img = cv2.resize(img,(224,224))
 
         
