@@ -1,31 +1,10 @@
 
-from collections import Counter
+
 import torch
 
 
-def tokenize_text(caption):
-
-    vocab_set = set()
-
-    tokenized_list = [tokenize_sentence(sentence) for sentence in caption]
-
-    for sentence in tokenized_list:
-        for word in sentence:
-            vocab_set.add(word)
-
-    vocab_list = list(vocab_set) + ["<START>", "<END>", "<UNK>", "<PAD>"]
 
 
-    word_to_index = {word:idx for idx,word in enumerate(vocab_list)}
-    
-
-
-
-
-
-
-def tokenize_sentence(sentence):
-    return sentence.lower().split()
 
 
 class Encoder():
@@ -42,7 +21,7 @@ class Encoder():
     def build_vocab(self, captions):
         vocab_set = set()
 
-        tokenized_list = [tokenize_sentence(sentence) for sentence in captions]
+        tokenized_list = [self.tokenize_sentence(sentence) for sentence in captions]
 
         for sentence in tokenized_list:
             for word in sentence:
@@ -68,7 +47,7 @@ class Encoder():
 
         max_length = 0
 
-        tokenized_list = [tokenize_sentence(sentence) for sentence in captions]
+        tokenized_list = [self.tokenize_sentence(sentence) for sentence in captions]
         
         for sentence in tokenized_list:
             if len(sentence)> max_length:
