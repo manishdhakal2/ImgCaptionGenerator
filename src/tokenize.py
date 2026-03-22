@@ -2,11 +2,6 @@
 
 import torch
 
-
-
-
-
-
 class Encoder():
     def __init__(self, captions):
         self.captions = captions
@@ -63,7 +58,7 @@ class Encoder():
 
             encoded_sentence =[
                 self.word2idx["<START>"],
-                *[self.word2idx[word] for word in sentence],
+                *[self.word2idx.get(word, self.word2idx["<UNK>"]) for word in sentence], 
                 self.word2idx["<END>"]
             ]
 
