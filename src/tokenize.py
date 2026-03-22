@@ -3,14 +3,16 @@
 import torch
 
 class Encoder():
-    def __init__(self, captions):
-        self.captions = captions
+    def __init__(self):
+        
 
-        self.build_vocab(captions)
+        
 
         self.maxLength = None
         self.pad_index = None
         self.special_indices= []
+
+        
     
 
     def build_vocab(self, captions):

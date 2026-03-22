@@ -3,13 +3,24 @@ import numpy as np
 import cv2
 import os
 
+from tokenize import Encoder
+
 from sklearn.model_selection import train_test_split  
 
 from torch.utils.data import Dataset, DataLoader
 
 
 
-def load_dataset( img_path, caption_path):
+def load_dataset( img_path, caption_path, tokenizer):
+
+
+    """"
+    Returns  (train Dataloader, test Dataloader, Instance of Encoder class)
+    
+    """
+
+
+    
 
     
 
@@ -37,8 +48,6 @@ def load_dataset( img_path, caption_path):
 
         img = cv2.imread(image_file)
 
-
-
         if img is None:
             print(f"Couldn't Load {key}")
         
@@ -61,6 +70,9 @@ def load_dataset( img_path, caption_path):
 
     captions = list(caption_dict.values())
 
+    tokenizer.build_vocab(captions)
+
+    captions = tokenizer.encode_text(captions)
 
     train_img, test_img, train_caps, test_caps = train_test_split(img_tensor, captions, test_size = 0.33, random_state= 42)
 
@@ -74,7 +86,7 @@ def load_dataset( img_path, caption_path):
 
 
 
-    return train_loader, test_loader
+    return train_loader, test_loader, tokenizer
 
 
     
