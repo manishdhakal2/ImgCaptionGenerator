@@ -5,7 +5,7 @@ from torchvision.models import resnet50, ResNet50_Weights
 
 
 class CNN(nn.Module):
-    def __init__(self,device):
+    def __init__(self, embed_dim, device):
 
         super().__init__()
 
@@ -13,9 +13,7 @@ class CNN(nn.Module):
 
         modules = list(model.children())[:-1]
         
-        size = None
-
-        embed_dim = None
+        size = 2048
 
         self.model_backbone = nn.Sequential(*modules)
 
@@ -40,31 +38,44 @@ class CNN(nn.Module):
 
 class LSTM(nn.Module):
 
-    def __init__(self,device):
+    def __init__(self, embed_dim, device, vocab_size): 
 
         super().__init__()
 
         hidden_size = 64
+
+
+        self.encoder = nn.Embedding(vocab_size, embed_dim)
         self.model = nn.LSTM(
-            input_size=None,
+            input_size=embed_dim,
             hidden_size=hidden_size,
             num_layers=2,
             batch_first= True,
             device = device
         )
 
-        self.linear = nn.Linear (hidden_size,None)
+        self.linear = nn.Linear (hidden_size,vocab_size)
 
-    def forward(self, x):
-        output, (hn,cn) = self.model(x)
+    def forward(self, captions, img_features):
 
-        return self.linear(output)
+        embedding = self.encoder(captions)
+
+        img_features = img_features.unsqueeze()
+        x = torch.cat((img_features,embedding),dim = 1)
+        
+        output, (hn,cn) =self.model(x)
+
+        logits =  self.linear(output)
+
+        return logits
+    
 
 
 
-class Encoder:
-    def __init__(self):
-        pass
+
+
+
+
 
 
         

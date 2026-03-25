@@ -4,16 +4,12 @@ import torch
 
 class Encoder():
     def __init__(self):
-        
-
-        
-
-        self.maxLength = None
+        self.max_length = None
         self.pad_index = None
         self.special_indices= []
 
         
-    
+    #----------------------------------------------#
 
     def build_vocab(self, captions):
         vocab_set = set()
@@ -35,10 +31,13 @@ class Encoder():
         self.idx2word = {idx:word for idx,word in enumerate(self.vocab_list)}
 
     
-    
+    #----------------------------------------------#
+
     def tokenize(self,sentence):
         return sentence.lower().split()
     
+    #----------------------------------------------#
+
     def encode_text(self, captions):
 
 
@@ -50,6 +49,8 @@ class Encoder():
             if len(sentence)> max_length:
                 max_length = len(sentence)
         
+        self.max_length = max_length
+        
 
 
 
@@ -59,6 +60,7 @@ class Encoder():
 
 
             encoded_sentence =[
+                
                 self.word2idx["<START>"],
                 *[self.word2idx.get(word, self.word2idx["<UNK>"]) for word in sentence], 
                 self.word2idx["<END>"]
@@ -71,7 +73,8 @@ class Encoder():
         
         return encoded_list
     
-
+    #----------------------------------------------#
+    
     def decode_text(self, indices):
 
 

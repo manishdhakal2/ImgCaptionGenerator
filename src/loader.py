@@ -74,6 +74,9 @@ def load_dataset( img_path, caption_path, tokenizer):
 
     captions = tokenizer.encode_text(captions)
 
+
+    captions = [torch.tensor(c,dtype=torch.long) for c in captions]
+
     train_img, test_img, train_caps, test_caps = train_test_split(img_tensor, captions, test_size = 0.33, random_state= 42)
 
 
@@ -104,7 +107,14 @@ class ImageCaptionDataset(Dataset):
     
     def __getitem__(self,index):
 
-        return self.img[index],self.caption[index]
+        caption = self.caption[index]
+
+
+        #Input caption
+        input_cap = caption[:-1]
+        target_cap = caption[1:]
+
+        return self.img[index],input_cap, target_cap
 
    
 
