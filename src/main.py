@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from tokenize import Encoder
+from encoder import Encoder
 from models import CNN, LSTM
 from loader import load_dataset
 
@@ -43,7 +43,7 @@ if __name__ == "__main__":
 
     print("Starting Training.....")
 
-    train_models(CNN, LSTM, train_loader, epochs = epochs ,learning_rate=lr, pad_index= tokenizer.pad_index)
+    train_models(cnn_model, lstm_model, train_loader, epochs = epochs ,learning_rate=lr, pad_index= tokenizer.pad_index)
 
 
 

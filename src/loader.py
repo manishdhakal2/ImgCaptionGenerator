@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 import os
 
-from tokenize import Encoder
+from encoder import Encoder
 
 from sklearn.model_selection import train_test_split  
 
@@ -54,7 +54,7 @@ def load_dataset( img_path, caption_path, tokenizer):
 
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-        img = img.permute(2,0,1)
+        
 
         img = cv2.resize(img,(224,224))
 
@@ -67,15 +67,21 @@ def load_dataset( img_path, caption_path, tokenizer):
     
 
     img_tensor = torch.tensor(np.array(image_list), dtype = torch.float32)/255.0
+    img_tensor = img_tensor.permute(0,3,1,2)
 
     captions = list(caption_dict.values())
 
     tokenizer.build_vocab(captions)
 
+    print("Vocabs built !")
+
     captions = tokenizer.encode_text(captions)
+    
 
 
     captions = [torch.tensor(c,dtype=torch.long) for c in captions]
+
+    captions = torch.stack(captions)
 
     train_img, test_img, train_caps, test_caps = train_test_split(img_tensor, captions, test_size = 0.33, random_state= 42)
 
@@ -83,13 +89,16 @@ def load_dataset( img_path, caption_path, tokenizer):
     train_dataset = ImageCaptionDataset(img_tensor= train_img, labels = train_caps)
     test_dataset = ImageCaptionDataset(img_tensor= test_img, labels = test_caps)
 
+    print("Dataset created !")
+
 
     train_loader = DataLoader(train_dataset, batch_size = 8, shuffle= True, num_workers= 0)
     test_loader = DataLoader(test_dataset, batch_size = 8, shuffle= True, num_workers= 0)
+    print("DataLoaders created !")
 
 
 
-    return train_loader, test_loader, tokenizer
+    return train_loader, test_loader
 
 
     
@@ -99,6 +108,9 @@ def load_dataset( img_path, caption_path, tokenizer):
 class ImageCaptionDataset(Dataset):
     def __init__(self, img_tensor, labels):
         self.img = img_tensor
+
+        
+    
         self.caption = labels
     
     def __len__(self):
