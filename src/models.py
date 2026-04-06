@@ -15,13 +15,15 @@ class CNN(nn.Module):
         
         size = 2048
 
-        self.model_backbone = nn.Sequential(*modules).to(device)
+        self.model_backbone = nn.Sequential(*modules)
 
         #Freeze the training 
         for i in self.model_backbone.parameters():
             i.requires_grad = False
         
-        self.linear = nn.Linear(size, embed_dim).to(device)
+        self.linear = nn.Linear(size, embed_dim)
+
+        self.to(device)
     
 
     def forward(self,x):
@@ -33,7 +35,7 @@ class CNN(nn.Module):
         feature_vector = self.linear(vector_flattened)
 
 
-        print(f"Dtype of feature vector : {feature_vector.dtype}, {feature_vector.shape}")
+        
 
         return feature_vector
 
@@ -48,7 +50,7 @@ class LSTM(nn.Module):
         hidden_size = 64
 
 
-        self.encoder = nn.Embedding(vocab_size, embed_dim).to(device)
+        self.encoder = nn.Embedding(vocab_size, embed_dim)
         self.model = nn.LSTM(
             input_size=embed_dim,
             hidden_size=hidden_size,
@@ -57,7 +59,11 @@ class LSTM(nn.Module):
             device = device
         ).to(device)
 
-        self.linear = nn.Linear (hidden_size,vocab_size).to(device)
+        print(f"Vocab Size is :{vocab_size}")
+
+        self.linear = nn.Linear (hidden_size,vocab_size)
+
+        self.to(device)
 
     def forward(self, captions, img_features):
 
@@ -66,7 +72,7 @@ class LSTM(nn.Module):
 
         embedding = self.encoder(captions)
 
-        img_features = img_features.unsqueeze()
+        img_features = img_features.unsqueeze(1)
         x = torch.cat((img_features,embedding),dim = 1)
         
         output, (hn,cn) =self.model(x)

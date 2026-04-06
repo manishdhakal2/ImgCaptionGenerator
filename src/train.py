@@ -1,11 +1,12 @@
 from models import CNN,LSTM
 import torch
+from tqdm import tqdm
 import torch.nn as nn
 
 from loader import load_dataset
 
 
-def train_models(cnn_model, lstm_model, train_loader, epochs, learning_rate, pad_index):
+def train_models(cnn_model, lstm_model, train_loader, epochs, learning_rate, pad_index, device):
 
     pad_index = torch.tensor(pad_index)
 
@@ -16,26 +17,40 @@ def train_models(cnn_model, lstm_model, train_loader, epochs, learning_rate, pad
 
     for epoch in range(epochs):
 
+
+        print(f"Starting epoch {epoch}")
+
         running_loss = 0.0
 
         lstm_model.train()
-        
-        for batch in train_loader:
+
+        batch_count = 0
+
+        progress = tqdm(train_loader)
+        for batch_count, batch in enumerate(progress):
+
 
             images, input_captions, target_captions  = batch[0], batch[1], batch[2]
-            input_captions = [torch.tensor(caption,dtype=torch.long) for caption in input_captions]
+            input_captions = [torch.tensor(caption,dtype=torch.long,device=device) for caption in input_captions]
 
             img_features = cnn_model(images)
 
             y_pred = lstm_model(input_captions, img_features)
+           
 
-            loss = loss_fn(y_pred, target_captions)
+            #Permute in order to match dims and leave out the first index as it's a processed image feature
+            loss = loss_fn(y_pred[:,1:,:].permute(0,2,1),target_captions)
 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
-            running_loss += loss
+            running_loss += loss.item()
+
+            progress.set_postfix({
+        'loss': f'{loss.item():.4f}',
+        'batch': batch_count
+    })
         
         print(f"Epoch {epoch} Running Loss : {running_loss}")
             

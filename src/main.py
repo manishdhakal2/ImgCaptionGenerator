@@ -18,6 +18,9 @@ if __name__ == "__main__":
     device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
 
 
+    print(f"On device : {device}")
+
+
    
 
     tokenizer = Encoder()
@@ -25,7 +28,7 @@ if __name__ == "__main__":
     print("Loading dataloaders......")
     train_loader, test_loader = load_dataset(r"D:/Python/ImgCaptionGenerator/data/images",
                                               r"D:/Python/ImgCaptionGenerator/data/captions.txt",
-                                                tokenizer)
+                                                tokenizer, device)
     
     print("Dataloaders loaded successfully..../n")
 
@@ -43,7 +46,7 @@ if __name__ == "__main__":
 
     print("Starting Training.....")
 
-    train_models(cnn_model, lstm_model, train_loader, epochs = epochs ,learning_rate=lr, pad_index= tokenizer.pad_index)
+    train_models(cnn_model, lstm_model, train_loader, epochs = epochs ,learning_rate=lr, pad_index= tokenizer.pad_index, device=device)
 
 
 

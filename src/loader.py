@@ -11,7 +11,7 @@ from torch.utils.data import Dataset, DataLoader
 
 
 
-def load_dataset( img_path, caption_path, tokenizer):
+def load_dataset( img_path, caption_path, tokenizer, device):
 
 
     """"
@@ -66,7 +66,7 @@ def load_dataset( img_path, caption_path, tokenizer):
 
     
 
-    img_tensor = torch.tensor(np.array(image_list), dtype = torch.float32)/255.0
+    img_tensor = torch.tensor(np.array(image_list), dtype = torch.float32,device=device)/255.0
     img_tensor = img_tensor.permute(0,3,1,2)
 
     captions = list(caption_dict.values())
@@ -79,7 +79,7 @@ def load_dataset( img_path, caption_path, tokenizer):
     
 
 
-    captions = [torch.tensor(c,dtype=torch.long) for c in captions]
+    captions = [torch.tensor(c,dtype=torch.long,device=device) for c in captions]
 
     captions = torch.stack(captions)
 

@@ -22,6 +22,8 @@ class Encoder():
 
         self.vocab_list = [ "<PAD>", "<START>", "<END>", "<UNK>"] + sorted(list(vocab_set)) 
 
+        self.max_length = len(self.vocab_list)
+
         self.word2idx = {word:idx for idx, word in enumerate(self.vocab_list)}
 
         self.pad_index = self.word2idx["<PAD>"]
@@ -49,7 +51,6 @@ class Encoder():
             if len(sentence) > max_length:
                 max_length = len(sentence)
         
-        self.max_length = max_length
         
 
 
