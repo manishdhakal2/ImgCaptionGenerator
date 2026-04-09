@@ -8,6 +8,9 @@ class Encoder():
         self.pad_index = None
         self.special_indices= []
 
+        self.word2idx = None
+        self.idx2word = None
+
         
     #----------------------------------------------#
 
