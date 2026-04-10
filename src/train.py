@@ -39,7 +39,7 @@ def train_models(cnn_model, lstm_model, train_loader, epochs, learning_rate, pad
            
 
             #Permute in order to match dims and leave out the first index as it's a processed image feature
-            loss = loss_fn(y_pred[:,1:,:].permute(0,2,1),target_captions)
+            loss = loss_fn(y_pred.permute(0,2,1),target_captions)
 
             optimizer.zero_grad()
             loss.backward()
