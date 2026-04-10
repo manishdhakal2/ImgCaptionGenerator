@@ -47,7 +47,7 @@ class LSTM(nn.Module):
 
         super().__init__()
 
-        hidden_size = 64
+        hidden_size = 5
 
 
         self.encoder = nn.Embedding(vocab_size, embed_dim)
@@ -66,8 +66,8 @@ class LSTM(nn.Module):
         self.to(device)
 
     def forward(self, captions, img_features):
-
-        captions = torch.stack(captions)
+        if not isinstance(captions, torch.Tensor):
+            captions = torch.stack(captions)
 
 
         embedding = self.encoder(captions)
