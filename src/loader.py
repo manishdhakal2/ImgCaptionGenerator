@@ -76,17 +76,10 @@ def load_dataset(cnn_model, img_path, caption_path, tokenizer, device):
     batch_size = 32
 
     img_array = np.array(image_list)
-    features_all = []
 
-    cnn_model.eval()
-    with torch.no_grad():
-        for i in range(0, len(img_array), batch_size):
-            batch = img_array[i:i+batch_size]
-            batch = torch.tensor(batch, dtype=torch.float32).permute(0,3,1,2).to(device) / 255.0
-            features = cnn_model(batch).cpu()  
-            features_all.append(features)
 
-    feature_vector = torch.cat(features_all, dim=0)
+
+    feature_vector = forward_cnn(cnn_model, img_array, batch_size,device)
 
 
 
@@ -122,6 +115,25 @@ def load_dataset(cnn_model, img_path, caption_path, tokenizer, device):
 
 
     return train_loader, test_loader
+
+
+
+def forward_cnn(cnn_model,img_array :np.array, batch_size, device):
+    features_all = []
+
+    cnn_model.eval()
+    with torch.no_grad():
+        for i in range(0, len(img_array), batch_size):
+            batch = img_array[i:i+batch_size]
+            batch = torch.tensor(batch, dtype=torch.float32).permute(0,3,1,2).to(device) / 255.0
+            features = cnn_model(batch).cpu()  
+            features_all.append(features)
+
+    feature_vector = torch.cat(features_all, dim=0)
+
+    return feature_vector
+
+
 
 
     

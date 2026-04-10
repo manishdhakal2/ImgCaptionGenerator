@@ -47,7 +47,7 @@ class LSTM(nn.Module):
 
         super().__init__()
 
-        hidden_size = 5
+        hidden_size = 256
 
 
         self.encoder = nn.Embedding(vocab_size, embed_dim)

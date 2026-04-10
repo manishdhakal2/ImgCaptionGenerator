@@ -1,4 +1,4 @@
-from models import CNN,LSTM
+from models import LSTM
 import torch
 from tqdm import tqdm
 import torch.nn as nn
@@ -11,7 +11,7 @@ def train_models(cnn_model, lstm_model, train_loader, epochs, learning_rate, pad
     pad_index = torch.tensor(pad_index)
 
 
-    optimizer = torch.optim.SGD(params = lstm_model.parameters(), lr= learning_rate, momentum=0.08, weight_decay= 1e-4)
+    optimizer = torch.optim.SGD(params = lstm_model.parameters(), lr= learning_rate, momentum=0.9, weight_decay= 1e-4)
 
     loss_fn = nn.CrossEntropyLoss(ignore_index=pad_index)
 
@@ -30,10 +30,10 @@ def train_models(cnn_model, lstm_model, train_loader, epochs, learning_rate, pad
         for batch_count, batch in enumerate(progress):
 
 
-            images, input_captions, target_captions  = batch[0], batch[1], batch[2]
+            img_features, input_captions, target_captions  = batch[0].to(device), batch[1].to(device), batch[2].to(device)
             input_captions = [torch.tensor(caption,dtype=torch.long,device=device) for caption in input_captions]
 
-            img_features = cnn_model(images)
+            
 
             y_pred = lstm_model(input_captions, img_features)
            

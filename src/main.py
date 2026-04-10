@@ -6,14 +6,18 @@ from loader import load_dataset
 
 from train import train_models
 
+import pickle
+
+from eval import eval_model
+
 
 
 if __name__ == "__main__":
     
 
     #Define hyperparams
-    lr = 0.01
-    epochs = 15
+    lr = 0.1
+    epochs = 20
 
     device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
 
@@ -25,28 +29,49 @@ if __name__ == "__main__":
 
     tokenizer = Encoder()
 
-    print("Loading dataloaders......")
-    train_loader, test_loader = load_dataset(r"D:/Python/ImgCaptionGenerator/data/images",
-                                              r"D:/Python/ImgCaptionGenerator/data/captions.txt",
-                                                tokenizer, device)
-    
-    print("Dataloaders loaded successfully..../n")
+ 
 
     
     vocab_size = tokenizer.max_length
     embed_dim = 256
 
-    print("Initializing CNN and LSTM....")
+    print("Initializing CNN ....")
+    cnn_model = CNN(256, device)
 
-    cnn_model = CNN(embed_dim, device)
+    print("Loading dataloaders......")
+
+    train_loader, test_loader = load_dataset(cnn_model,
+                                             r"D:/Python/ImgCaptionGenerator/data/images",
+                                              r"D:/Python/ImgCaptionGenerator/data/captions.txt",
+                                                tokenizer, device)
+    
+    print("Dataloaders loaded successfully..../n")
+
+    print("Initializing LSTM ....")
+
     lstm_model = LSTM(embed_dim, device, vocab_size=tokenizer.max_length)
 
+
     print("CNN and LSTM Initialized successfully")
+
+
 
 
     print("Starting Training.....")
 
     train_models(cnn_model, lstm_model, train_loader, epochs = epochs ,learning_rate=lr, pad_index= tokenizer.pad_index, device=device)
+
+    print("Training Completed !")
+
+    print("\nStarting Testing Loop ....")
+    torch.save(lstm_model.state_dict(), "weights/01_LSTM.pth")
+
+    torch.save(tokenizer, "weights/encoder.pth")
+
+    eval_model(lstm_model, test_loader, tokenizer, device)
+
+
+
 
 
 
