@@ -52,7 +52,7 @@ class LSTM(nn.Module):
 
         self.encoder = nn.Embedding(vocab_size, embed_dim)
         self.model = nn.LSTM(
-            input_size=embed_dim,
+            input_size=embed_dim * 2,
             hidden_size=hidden_size,
             num_layers=2,
             batch_first= True,
@@ -72,7 +72,7 @@ class LSTM(nn.Module):
 
         embedding = self.encoder(captions)
 
-        img_features = img_features.unsqueeze(1)
+        img_features = img_features.unsqueeze(1).repeat(1,embedding.size(1),1)
         x = torch.cat((img_features,embedding),dim = 1)
         
         output, (hn,cn) =self.model(x)
