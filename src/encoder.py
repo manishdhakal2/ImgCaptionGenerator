@@ -101,7 +101,7 @@ class Encoder():
             for word in element:
                 if word not in ["<PAD>", "<START>", "<END>", "<UNK>"]:
                     final_string += f"{word} "
-                    final_string += f"{self.idx2word[index]} "
+                    
             decoded_string_list.append(final_string)
             
         
